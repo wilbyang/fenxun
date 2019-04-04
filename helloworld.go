@@ -48,6 +48,8 @@ func (m *Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func index(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 	fmt.Fprint(w, "Hello, world!")
 }
+
 func hello(w http.ResponseWriter, _ *http.Request, params httprouter.Params) {
 	fmt.Fprint(w, "Hello, world!", params.ByName("name"))
+
 }

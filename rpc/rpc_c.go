@@ -1,5 +1,8 @@
-package main
+package rpc
 
+/*
+ *标准库的RPC默认采用Go语言特有的gob编码，因此从其它语言调用Go语言实现的RPC服务将比较困难。
+ */
 import (
 	"fmt"
 	"log"

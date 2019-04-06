@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"google.golang.org/appengine"
@@ -28,6 +29,7 @@ func main() {
 	router.GET("/", index)
 	router.GET("/hello/:name", hello)
 	router.POST("/posts", postPost)
+	router.GET("/api/posts", apiGetPost)
 	router.GET("/protected/", BasicAuth(Protected))
 	http.Handle("/", router)
 	appengine.Main()
@@ -57,6 +59,17 @@ func index(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 	fmt.Fprint(w, "Hello, world!")
 }
 
+func apiGetPost(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	c := appengine.NewContext(r)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	q := datastore.NewQuery("Post").Order("-Posted")
+	posts := make([]Post, 0, 10)
+	if _, err := q.GetAll(c, &posts); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(posts)
+}
 func postPost(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	ctx := appengine.NewContext(r)
 	post := Post{
